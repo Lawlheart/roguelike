@@ -1,8 +1,16 @@
+import GameInterface from '../components/GameInterface'
+import GameDisplay from '../components/GameDisplay'
+
 function Game() {
   return (
-    <>
-      Game Page
-    </>
+    <div
+    className="game-view"
+    // key={this.state.playing}
+    >
+        
+        <GameInterface></GameInterface>
+        <GameDisplay></GameDisplay>
+      </div>
   )
 }
 
