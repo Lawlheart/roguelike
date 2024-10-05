@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+blockquote {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  unicode-bidi: isolate;
+}
+
+@layer components {
+  .clickable {
+    @apply cursor-pointer;
+    @media screen and (min-width: 80rem) {
+      &:hover {
+        transition: 0.2s;
+        transform: scale(1.075);
+      }
+    }
+    @media screen and (max-width: 80rem) {
+      &:hover {
+        transition: 0.2s;
+        transform: scale(1.035);
+      }
+    }
+  }
+  .containerized {
+    @apply max-w-4xl m-auto;
+  }
+
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  details[open] summary ~ * {
+    animation: sweep .5s ease-in-out;
+  }
+  
+  @keyframes sweep {
+    0%    {opacity: 0; margin-top: -1rem}
+    100%  {opacity: 1; margin-top: 0px}
+  }
+
+  // .lh-button {
+  //   @apply clickable min-w-16 px-2 py-1 m-2 font-bold text-2xl;
+  //   @media screen and (max-width: 22rem) {
+  //     @apply text-lg min-w-8;
+  //   }
+  // }
+
+  .sweep {
+    animation: sweep .5s ease-in-out;
+  }
+
+  // .primary-cta-button {
+  //   @apply lh-button bg-lh-green-lightest text-lh-indigo-darkest;
+  // }
+  // .secondary-cta-button {
+  //   @apply lh-button bg-lh-pink-lightest text-lh-purple-darkest;
+  // }
+  // .tertiary-cta-button {
+  //   @apply lh-button bg-lh-blue-lightest text-lh-indigo-darkest;
+  // }
+}
