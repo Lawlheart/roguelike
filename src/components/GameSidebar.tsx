@@ -1,4 +1,8 @@
+import { useMap } from "../hooks"
+
 function GameSidebar() {
+  const { mapState } = useMap()
+
   return (
     <div className="sidebar">
       <div className="baddies-box clearfix">
@@ -25,8 +29,7 @@ function GameSidebar() {
       </div>
       <div className="potions-box clearfix">
         <h2>Potions</h2>
-        <h4>X on map</h4>
-        {/* <h4>{this.state.potions.length} on map</h4> */}
+        <h4>{mapState.potions.length} on map</h4>
         <div className="gear potion info" />
       </div>
       <div className="objective-box clearfix">

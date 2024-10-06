@@ -6,6 +6,7 @@ import Lost from './pages/Lost'
 import Vite from './pages/Vite'
 
 import './styles/App.scss'
+import './styles/Game.scss'
 
 function App() {
   return (

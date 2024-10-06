@@ -1,26 +1,7 @@
-export interface IMapCoords {
-  [key: string]: number[][]
-}
-
 // Baddies Config Types
-export interface Baddie {
-  hp: number;
-  color: string;
-  mindmg: number;
-  maxdmg: number;
-  level: number;
-}
 export interface IBaddiesConfig {
   baddieFoot: string
-}
-
-
-export interface IBaddiesState extends IBaddiesConfig {
-  baddieset: Baddie[]
-  baddies: number[][]
-}
-
-export interface IBossConfig {
+  baddieCount: number
   bossData: {
     hp: number
     mindmg: number
@@ -29,22 +10,37 @@ export interface IBossConfig {
   }
 }
 
-
-export interface IBossState extends IBossConfig {
-  boss: number[][]
+export interface IBaddiesState extends IBaddiesConfig {
+  baddieset: {
+    hp: number;
+    color: string;
+    mindmg: number;
+    maxdmg: number;
+    level: number;
+  }[]
+  baddieCoords: number[][]
+  bossCoords: number[][]
 }
+
 // Combat Config Types
 export interface ICombatConfig {
   weaponset: string[]
 }
 
 export interface ICombatState extends ICombatConfig {
-  weapons: number[][]
+  weaponCoords: number[][]
+  hitmessage: string
+  hurtmessage: string
+  healmessage: string
+  xpmessage: string
+  messageCount: number
 }
 
-
-// Display Config Types
-export interface IDisplayConfig {
+// Map Config Types
+export interface IMapConfig {
+  runs: number
+  minRoomSize: number
+  maxRoomSize: number
   gridheight: number
   gridwidth: number
   viewheight: number
@@ -53,26 +49,11 @@ export interface IDisplayConfig {
   bgy: number
 }
 
-export interface IDisplayState extends IDisplayConfig {
-  hitmessage: string
-  hurtmessage: string
-  healmessage: string
-  xpmessage: string
-  messageCount: number
-}
-
-
-// Map Config Types
-export interface IMapConfig {
-  runs: number
-  minRoomSize: number
-  maxRoomSize: number
-}
-
 export interface IMapState extends IMapConfig {
-  map: string[][]
-  coords: number[][]
-  potions: number[][],
+  map: number[][]
+  rooms: string[][]
+  wallCoords: number[][]
+  potions: number[][]
 }
 
 // Player Config Types
@@ -96,9 +77,7 @@ export interface IPlayerState extends IPlayerConfig {
 // Game Config Types
 export interface IGameState {
   baddies: IBaddiesState
-  boss: IBossState
   combat: ICombatState
-  display: IDisplayState
   player: IPlayerState
   map: IMapState
   game: {

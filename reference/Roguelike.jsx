@@ -617,7 +617,7 @@ var Main = React.createClass({
         weapon: weapon,
       });
     } else if (baddies.length < this.state.baddies.length) {
-      if (!this.fight(baddieIndex, baddies)) {
+      if (!this.fight(baddieIndex)) {
         return false;
       }
     }

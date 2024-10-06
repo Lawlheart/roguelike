@@ -20,7 +20,7 @@ function Header() {
         <nav className="flex">
           <ul className="flex">
             { headerNav.map(({ text, link }) => (
-              <li className="py-2 px-4">
+              <li className="py-2 px-4" key={`header-nav-${text}`}>
                 <Link to={link}>
                   { text }
                 </Link>

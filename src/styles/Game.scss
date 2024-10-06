@@ -1,0 +1,270 @@
+@use "sass:color";
+
+@mixin health-bar-fill() {
+  @for $i from 0 to 101 {
+    .health-val-#{$i} {
+      width: calc($i/100);
+      @if $i < 20 {
+        background: linear-gradient(#EF002A, color.adjust(#EF002A, $lightness: -20%));
+      } @else if $i < 60 {
+        background: linear-gradient(#FFCE00, color.adjust(#FFCE00, $lightness: -20%));
+      } @else {
+        background: linear-gradient(#0ACF00, color.adjust(#0ACF00, $lightness: -20%));
+      }
+      @if $i > 98 {
+        border-radius: 3px;
+      } @else {
+        border-radius: 3px 0 0 3px;
+      }
+    }
+  }
+}
+
+
+
+body {
+	background-color: #222;
+}
+.user-interface {
+  width: 638px;
+  margin: 40px auto 0;
+  height: 46px;
+  overflow: auto;
+  position: relative;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 3px 3px 0 0;
+  .player-stats {
+    position: absolute;
+    top: 0;
+    left: 0;
+    h3, h4 {
+      margin: 0;
+    }
+  }
+  .weapon-label {
+    position: absolute;
+    top: 12px;
+    left: 140px;
+  }
+  .player-weapon {
+    position: absolute;
+    top: 6px;
+    left: 200px;
+  }
+  .coords {
+    position: absolute;
+    top: -4px;
+    right: 180px;
+    font-size: 1.2em;
+    display: block;
+  }
+  .health-bar-container {
+    position: absolute;
+    background: linear-gradient(#111, color.adjust(#111, $lightness: 16%));
+    border-radius: 3px;
+    z-index: 100;
+    top: 10px;
+    right: 10px;
+    height: 20px;
+    width: 160px;
+    @include health-bar-fill;
+    .health-bar {
+      height: 100%
+    }
+  }
+}
+
+.box {
+	position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: #555;
+  &.game-over, &.game-win {
+    background-color: #000;
+    text-align: center;
+    h1 {
+      margin: 40px;
+    }
+    button {
+      background: color.adjust(#222, $lightness: 10%);
+      border-radius: 3px;
+      border: 1px solid #222;
+      color: #fff;
+      padding: calc(1.5em / 4) calc(1.6em / 2);
+      cursor: pointer;
+    }
+
+  }
+}
+
+
+.map {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  .tile {
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 30px;
+    width: 30px;
+    border: 1px solid #111;
+    background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -423px -723px;
+    &.wall {
+      background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -391px -659px;
+    }
+    &.fog {
+      background: #000;
+      border: 1px solid #000;
+    }
+  }
+}
+
+.sprite {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	&.blackmage {	
+		&.left {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -478px -310px /  880px 830px;}
+		&.right {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -538px -310px /  880px 830px;}
+		&.down {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -598px -310px /  880px 830px;}
+		&.up {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -658px -310px /  880px 830px;}}
+	&.redmage {
+		&.left {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -478px -10px /  880px 830px;}
+		&.right {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -538px -10px /  880px 830px;}
+		&.down {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -598px -10px /  880px 830px;}
+		&.up {
+			background: url('https://bifrost.loreheart.com/projects/roguelike/sprites.png') no-repeat -658px -10px /  880px 830px;}}
+  &.baddie.left.red {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat -520px 0 / 712px 232px;}
+  &.baddie.right.red {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat -480px 0 / 712px 232px;}
+  &.baddie.left.blue {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat -40px -40px / 712px 232px;}
+  &.baddie.right.blue {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat 0 -40px / 712px 232px;}
+  &.baddie.left.gold {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat -280px -40px / 712px 232px;}
+  &.baddie.right.gold {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat -240px -40px / 712px 232px;}
+  &.info, &.boss.info {
+    position: relative;
+  }
+  &.boss {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/baddies.png') no-repeat -240px -160px / 712px 232px;}
+  &.fog {
+    display: none;}
+  &.player .floating-text {
+    position: relative;
+    text-shadow: 2px 2px 2px #000, -2px 2px 2px #000, 2px -2px 2px #000, -2px -2px 2px #000;
+    margin: 0 -20px;
+    font-weight: bold;
+    
+    .hit {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      color: #fff;}
+    .hurt {
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      color: #f00;}
+    .heal {
+      position: absolute;
+      bottom: -20px;
+      right: -40px;
+      color: #0f0;}
+    .xp {
+      position: absolute;
+      bottom: -20px;
+      left: -40px;
+      color: #ffa500;}
+  }
+}
+
+.gear {
+  position: absolute;
+  &.potion {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -173px -250px;
+    width: 32px;
+    height: 32px;
+  }
+  &.dagger {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -12px -118px;
+    width: 32px;
+    height: 32px;
+  }
+  &.sword { 
+    background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -45px -122px;
+    width: 31px;
+    height: 32px;
+  }
+  &.staff {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -143px -124px;
+    width: 29px;
+    height: 29px;
+  }
+  &.maul {
+    background: url('https://bifrost.loreheart.com/projects/roguelike/gear.png') no-repeat -175px -123px;
+    width: 29px;
+    height: 30px;
+  }
+  &.fog {
+    display: none;
+  }
+  &.info {
+    position: relative;
+  }
+}
+.game-view {
+  position: relative;
+  width: 740px;
+  margin: auto;
+}
+.sidebar {
+  width: 110px;
+  height: 506px;
+  position: absolute;
+  right: -80px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 3px 3px 0 0;
+  text-align: center;
+  padding: 10px;
+  h2 {
+    margin: 10px auto;
+    border-bottom: 1px solid #444;
+    font-size: 22px;
+  }
+  h4 {
+    float: right;
+    clear: both;
+    margin: 7px;
+  }
+  .baddie, .boss, .gear {
+    float: left;
+  }
+  .objective-box h4 {
+    margin: 7px auto;
+    float: none;
+    text-align: center;
+  }
+}
+
+.clearfix {
+  &:before, &:after {
+    content: " ";
+    display: table;}
+  &:after {
+    clear: both;}
+}

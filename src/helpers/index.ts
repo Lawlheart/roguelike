@@ -1,2 +1,3 @@
+export * from './map'
 export * from './random'
-export * from './combat'
+export * from './room'
