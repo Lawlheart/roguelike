@@ -2,15 +2,14 @@ import { useState } from "react"
 
 import { DEFAULT_INITIAL_STATE } from "../config"
 import { usePlayer, useBaddies, useCombat, useMap, useRooms } from "."
-import { IRoom } from "../types"
 
 export function useGame() {
   const [gameState, setGameState] = useState(DEFAULT_INITIAL_STATE)
 
-  const { baddieState } = useBaddies()
+  const { baddieState, getBaddieSet } = useBaddies()
   const { playerState, setPlayerState } = usePlayer()
   const { combatState } = useCombat()
-  const { mapState, setMapState, validMove, resolveMove, getAllCoords, carveHalls, genMap } = useMap()
+  const { mapState, setMapState, validMove, resolveMove, getAllCoords, carveHalls, genMap, randomPlayerStart, randomLocations } = useMap()
   const { placeRooms } = useRooms()
 
   const initialize = () => {
@@ -19,27 +18,36 @@ export function useGame() {
     coords = carveHalls(rooms, coords)
 
     const map = genMap(coords)
-    let playerCoords = this.randomPlayerStart(coords)
+    let playerCoords = randomPlayerStart(coords)
 
     let invalids = [playerCoords]
-    let potions = this.randomLocations(5, coords, invalids)
-    invalids = invalids.concat(potions)
-    let baddies = this.randomLocations(30, coords, invalids)
-    invalids = invalids.concat(baddies)
-    let weapons = this.randomLocations(4, coords, invalids)
-    invalids = invalids.concat(weapons)
-    let boss = this.randomLocations(1, coords, invalids)
-    let baddieset = this.getBaddieSet(baddies.length)
     
+    let potions = randomLocations(5, coords, invalids)
+    invalids = [...invalids, ...potions]
 
+    let baddies = randomLocations(30, coords, invalids)
+    invalids = [...invalids, ...baddies]
 
+    let weapons = randomLocations(4, coords, invalids)
+    invalids = [...invalids, ...weapons]
+
+    let bossCoords = randomLocations(1, coords, invalids)
+    let baddieset = getBaddieSet(baddies.length)
 
     setGameState({
       ...gameState,
-      baddies: baddieState,
+      baddies: {
+        ...baddieState,
+        baddieset,
+        bossCoords,
+      },
       player: playerState,
       combat: combatState,
-      map: mapState,
+      map: {
+        ...mapState,
+        map,
+        rooms,
+      },
     })
   }
 

@@ -1,19 +1,21 @@
-import { useGame } from "../hooks"
+import { useContext } from "react"
+
 import { FloatingText } from "./FloatingText"
 import { asPixels } from "../helpers"
+import { GameContext } from '../context'
+
 
 export const PlayerSprite = () => {
+  const gameState = useContext(GameContext)
+
   const {
-    gameState: {
-      player: {
-        sprite,
-        direction,
-        xpos,
-        ypos
-      }
-    },
-    moveSprite
-  } = useGame()
+    player: {
+      sprite,
+      direction,
+      xpos,
+      ypos
+    }
+  } = gameState
 
   const heroclass = `sprite player ${sprite} ${direction}`
   const herostyle = {

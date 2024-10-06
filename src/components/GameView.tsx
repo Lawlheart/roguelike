@@ -3,16 +3,19 @@ import GameMap from './GameMap'
 import { useGame } from "../hooks"
 import { asPixels } from "../helpers"
 import { PlayerSprite } from './PlayerSprite'
+import { createContext } from 'react'
 
 function GameView() {
-  const {
-    gameState: {
-      map: {
-        viewwidth,
-        viewheight
-      }
-    }
-  } = useGame()
+  const { gameState } = useGame()
+
+  const GameContext = createContext(gameState)
+
+  const { 
+    map: {
+      viewwidth,
+      viewheight
+    } 
+  } = gameState
 
   return (
     <div
@@ -22,8 +25,10 @@ function GameView() {
         height: asPixels(viewheight),
       }}
     >
-      <GameMap />
-      <PlayerSprite/>
+      <GameContext.Provider value={gameState}>
+        <GameMap />
+        <PlayerSprite/>
+      </GameContext.Provider>
     </div>
   )
 }

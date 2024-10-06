@@ -1,3 +1,5 @@
+import { IRoom } from "./rooms"
+
 // Baddies Config Types
 export interface IBaddiesConfig {
   baddieFoot: string
@@ -50,8 +52,8 @@ export interface IMapConfig {
 }
 
 export interface IMapState extends IMapConfig {
-  map: number[][]
-  rooms: string[][]
+  map: (number|string)[][]
+  rooms: IRoom[]
   wallCoords: number[][]
   potions: number[][]
 }
