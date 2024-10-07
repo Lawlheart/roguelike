@@ -63,7 +63,7 @@ export function useGame() {
   const moveSprite = (keyCode: string) =>{
     console.log('MoveSprite function')
     if (gameState.player.health === 0 || gameState.game.win) {
-      return;
+      return
     }
     const { player } = gameState.player
     let { direction, sprite, xpos, ypos } = gameState.player
@@ -74,54 +74,54 @@ export function useGame() {
 
     if (keyCode === 'KeyS' || keyCode === 'ArrowDown') {
       console.log("DOWN")
-      direction = "down";
+      direction = "down"
       if (validMove(player[0], player[1] + 1)) {
         if (
           bgy < gridheight - viewheight &&
           ypos > Math.floor(viewheight / 2)
         ) {
-          bgy += 1;
+          bgy += 1
         } else {
-          ypos += 1;
+          ypos += 1
         }
       }
     } else if (keyCode === 'KeyW' || keyCode === 'ArrowUp') {
       console.log("UP")
-      direction = "up";
+      direction = "up"
       if (validMove(player[0], player[1] - 1)) {
         if (bgy > 0 && ypos < Math.floor(viewheight / 2)) {
-          bgy -= 1;
+          bgy -= 1
         } else {
-          ypos -= 1;
+          ypos -= 1
         }
       }
     } else if (keyCode === 'KeyA' || keyCode === 'ArrowLeft') {
       console.log("LEFT")
-      direction = "left";
+      direction = "left"
       if (validMove(player[0] - 1, player[1])) {
         if (bgx > 0 && xpos < Math.floor(viewwidth / 2)) {
-          bgx -= 1;
+          bgx -= 1
         } else {
-          xpos -= 1;
+          xpos -= 1
         }
       }
     } else if (keyCode === 'KeyD' || keyCode === 'ArrowRight') {
       console.log("RIGHT")
-      direction = "right";
+      direction = "right"
       if (validMove(player[0] + 1, player[1])) {
         if (
           bgx < gridwidth - viewwidth &&
           xpos > Math.floor(viewwidth / 2)
         ) {
-          bgx += 1;
+          bgx += 1
         } else {
-          xpos += 1;
+          xpos += 1
         }
       }
     } else if (keyCode === 'KeyB') {
-      sprite = "blackmage";
+      sprite = "blackmage"
     } else if (keyCode === 'KeyR') {
-      sprite = "redmage";
+      sprite = "redmage"
     }
     if (resolveMove([xpos + bgx, ypos + bgy])) {
       console.log('Resolving Move')

@@ -171,9 +171,9 @@ export function useMap() {
   }
 
   const validMove = (x: number, y: number) => {
-    const { gridwidth, gridheight, wallCoords } = gameState.map
+    const { gridwidth, gridheight, map } = gameState.map
     const onmap = x > 0 && x < gridwidth && y > 0 && y < gridheight
-    const notWall = coordIndex(wallCoords, [x, y]) >= 0
+    const notWall = coordIndex(map, [x, y]) >= 0
     return onmap && notWall
   }
 

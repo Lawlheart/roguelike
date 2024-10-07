@@ -1,8 +1,8 @@
-import GameMap from './GameMap'
+import { useContext } from 'react'
 
+import GameMap from './GameMap'
 import { asPixels } from "../helpers"
 import { PlayerSprite } from './PlayerSprite'
-import { useContext } from 'react'
 import { GameContext } from '../context'
 
 function GameView() {

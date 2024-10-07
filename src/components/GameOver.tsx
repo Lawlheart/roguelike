@@ -1,8 +1,8 @@
-import { useMap, useGame } from '../hooks'
+import { useContext } from 'react'
 
 import { asPixels } from '../helpers'
-import { useContext } from 'react'
 import { GameContext } from '../context'
+import { useGame } from '../hooks'
 
 function GameOver() {
   const { gameState } = useContext(GameContext)

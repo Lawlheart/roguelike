@@ -18,6 +18,5 @@ export const MAP_INITIAL_STATE: IMapState = {
   ...DEFAULT_MAP_SETTINGS,
   map: [],
   rooms: [],
-  wallCoords: [],
   potions: [],
 }

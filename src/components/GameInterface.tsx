@@ -1,4 +1,5 @@
 import { useContext } from "react"
+
 import { GameContext } from "../context"
 
 function GameInterface() {

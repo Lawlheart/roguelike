@@ -15,7 +15,7 @@ export const PLAYER_INITIAL_STATE: IPlayerState = {
   level: 1,
   weapon: "unarmed",
   
-  player: [3, 6], //game player coords
-  xpos: 3, //player view position
-  ypos: 6, //player view position
+  player: [], //game player coords
+  xpos: 0, //player view position
+  ypos: 0, //player view position
 }

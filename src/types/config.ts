@@ -53,9 +53,8 @@ export interface IMapConfig {
 }
 
 export interface IMapState extends IMapConfig {
-  map: (number|string)[][]
+  map: number[][]
   rooms: IRoom[]
-  wallCoords: number[][]
   potions: number[][]
 }
 

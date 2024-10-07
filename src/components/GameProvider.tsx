@@ -20,7 +20,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         </GameContext.Provider>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default GameProvider;
+export default GameProvider
