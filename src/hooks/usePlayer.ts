@@ -1,16 +1,16 @@
-import { useState } from 'react'
+import { useContext } from 'react'
 
-import { PLAYER_INITIAL_STATE } from '../config'
-// import { useCombat } from '../hooks'
 import { random } from '../helpers'
+import { GameContext } from '../context'
+import { useMessage } from '.'
 
 export function usePlayer() {
-  const [playerState, setPlayerState] = useState(PLAYER_INITIAL_STATE)
+  const { gameState, setGameState } = useContext(GameContext)
 
-  // const { flashMessage } = useCombat()
+  const { flashMessage } = useMessage()
 
   const playerDamage = () => {
-    const { weapon, level } = playerState
+    const { weapon, level } = gameState.player
 
     let damage = 5 * level
     if (weapon === "unarmed") {
@@ -22,15 +22,15 @@ export function usePlayer() {
     } else if (weapon === "maul") {
       damage += random(4, 24)
     }
-    // flashMessage("* " + damage + " dmg", "hit")
+    flashMessage("* " + damage + " dmg", "hit")
     return damage
   }
 
   const checkForLevelUp = (xp: number) => {
-    let { level } = playerState
+    let { level } = gameState.player
     level = Math.floor(xp / 40) + 1
-    if (level !== playerState.level) {
-      // flashMessage("Level up!", "xp")
+    if (level !== gameState.player.level) {
+      flashMessage("Level up!", "xp")
       levelUp()
       return true
     }
@@ -38,17 +38,18 @@ export function usePlayer() {
   }
 
   const levelUp = () => {
-    setPlayerState({
-      ...playerState,
-      maxhealth: 80 + 20 * playerState.level,
-      health: (playerState.health += 20),
-      level: (playerState.level += 1),
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        maxhealth: 80 + 20 * gameState.player.level,
+        health: (gameState.player.health += 20),
+        level: (gameState.player.level += 1),
+      }
     })
   }
 
   return {
-    playerState,
-    setPlayerState,
     playerDamage,
     checkForLevelUp,
     levelUp,

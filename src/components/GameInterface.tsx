@@ -1,16 +1,17 @@
-import { useGame } from "../hooks"
+import { useContext } from "react"
+import { GameContext } from "../context"
 
 function GameInterface() {
-  const { gameState: {
-    player: {
-      player,
-      health,
-      maxhealth,
-      weapon,
-      level,
-      xp,
-    }
-  } } = useGame()
+  const {  gameState } = useContext(GameContext)
+
+  const {
+    player,
+    health,
+    maxhealth,
+    weapon,
+    level,
+    xp,
+  } = gameState.player
 
   const weaponclass = `player-weapon gear ${weapon}`
     

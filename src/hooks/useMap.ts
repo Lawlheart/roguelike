@@ -1,17 +1,14 @@
-import { useState } from 'react'
+import { useContext } from "react"
 
-import { MAP_INITIAL_STATE } from '../config'
-import { useBaddies, useCombat, usePlayer } from '.'
-import { IRoom } from '../types'
-import { random } from '../helpers'
+import { useCombat } from "."
+import { IRoom } from "../types"
+import { random } from "../helpers"
+import { GameContext } from "../context"
 
 export function useMap() {
-  const [mapState, setMapState] = useState(MAP_INITIAL_STATE)
+  const { gameState, setGameState } = useContext(GameContext)
 
-  const { playerState, setPlayerState } = usePlayer()
-  const { player } = playerState
-  const { baddieState } = useBaddies()
-  const { combatState, setCombatState, fight, fightBoss, heal } = useCombat()
+  const { fight, fightBoss, heal } = useCombat()
 
   const coordIndex = (coords: number[][], position: number[]) => {
     for (let i = 0; i < coords.length; i++) {
@@ -23,13 +20,13 @@ export function useMap() {
   }
 
   const genMap = (coords: number[][]) => {
-    const { gridheight, gridwidth } = mapState
+    const { gridheight, gridwidth } = gameState.map
     coords = coords.slice()
     const map = []
     for (let i = 0; i < gridheight; i++) {
       const row = []
       for (let j = 0; j < gridwidth; j++) {
-        const index = coordIndex(coords, [j, i]);
+        const index = coordIndex(coords, [j, i])
         if (index >= 0) {
           coords.splice(index, 1)
           row.push("1")
@@ -37,13 +34,20 @@ export function useMap() {
           row.push("0")
         }
       }
-      map.push(row);
+      map.push(row)
     }
-    return map;
+    setGameState({
+      ...gameState,
+      map: {
+        ...gameState.map,
+        map,
+      },
+    })
+    return map
   }
 
   const getAllCoords = (rooms: IRoom[]) => {
-    const coords = [];
+    const coords = []
     for (let k = 0; k < rooms.length; k++) {
       const room = rooms[k]
       for (let i = room.x1; i <= room.x2; i++) {
@@ -55,22 +59,32 @@ export function useMap() {
     return coords
   }
 
-  const addHCorridors = (x1: number, x2: number, y: number, coords: number[][]) => {
+  const addHCorridors = (
+    x1: number,
+    x2: number,
+    y: number,
+    coords: number[][]
+  ) => {
     for (let j = Math.min(x1, x2); j <= Math.max(x1, x2); j++) {
       if (coordIndex(coords, [j, y]) < 0) {
-        coords.push([j, y]);
+        coords.push([j, y])
       }
     }
-    return coords;
+    return coords
   }
 
-  const addVCorridors = (y1: number, y2: number, x: number, coords: number[][]) => {
+  const addVCorridors = (
+    y1: number,
+    y2: number,
+    x: number,
+    coords: number[][]
+  ) => {
     for (let j = Math.min(y1, y2); j <= Math.max(y1, y2); j++) {
       if (coordIndex(coords, [x, j]) < 0) {
-        coords.push([x, j]);
+        coords.push([x, j])
       }
     }
-    return coords;
+    return coords
   }
 
   const carveHalls = (rooms: IRoom[], coords: number[][]) => {
@@ -87,30 +101,27 @@ export function useMap() {
         coords = addHCorridors(x1, x2, y1, coords)
       }
     }
-    return coords;
+    return coords
   }
-
 
   const randomPlayerStart = (coords: number[][]) => {
     const player = coords[random(0, coords.length - 1)]
-    const { viewwidth, viewheight, gridheight, gridwidth} = mapState
-    let xpos, ypos, bgx, bgy;
+    const { viewwidth, viewheight, gridheight, gridwidth } = gameState.map
+    let xpos, ypos, bgx, bgy
 
     if (player[0] < viewwidth / 2) {
       bgx = 0
       xpos = player[0]
-
     } else if (player[0] > gridwidth - viewwidth / 2) {
       bgx = gridwidth - viewwidth
       xpos = player[0] - bgx
-
     } else {
-      xpos = Math.round(viewwidth / 2);
+      xpos = Math.round(viewwidth / 2)
       bgx = player[0] - xpos
     }
 
     if (player[1] < viewheight / 2) {
-      bgy = 0;
+      bgy = 0
       ypos = player[1]
     } else if (player[1] > gridheight - viewheight / 2) {
       bgy = gridheight - viewheight
@@ -119,23 +130,28 @@ export function useMap() {
       ypos = Math.round(viewheight / 2)
       bgy = player[1] - ypos
     }
-
-    setPlayerState({
-      ...playerState,
-      xpos: xpos,
-      ypos: ypos,
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        xpos: xpos,
+        ypos: ypos,
+      },
+      map: {
+        ...gameState.map,
+        bgx: bgx,
+        bgy: bgy,
+      },
     })
 
-    setMapState({
-      ...mapState,
-      bgx: bgx,
-      bgy: bgy,
-    })
-
-    return player;
+    return player
   }
 
-  const randomLocations = (num: number, coords: number[][], invalids: number[][]) => {
+  const randomLocations = (
+    num: number,
+    coords: number[][],
+    invalids: number[][]
+  ) => {
     const locations = []
     while (locations.length < num) {
       const location = coords[random(0, coords.length - 1)]
@@ -143,34 +159,35 @@ export function useMap() {
 
       for (let i = 0; i < invalids.length; i++) {
         if (location[0] == invalids[i][0] && location[1] == invalids[i][1]) {
-          valid = false;
+          valid = false
         }
       }
       if (valid) {
-        locations.push(location);
-        invalids.push(location);
+        locations.push(location)
+        invalids.push(location)
       }
     }
-    return locations;
+    return locations
   }
 
   const validMove = (x: number, y: number) => {
-    const onmap =
-      x > 0 &&
-      x < mapState.gridwidth &&
-      y > 0 &&
-      y < mapState.gridheight
-    const notWall = coordIndex(mapState.wallCoords, [x, y]) >= 0
+    const { gridwidth, gridheight, wallCoords } = gameState.map
+    const onmap = x > 0 && x < gridwidth && y > 0 && y < gridheight
+    const notWall = coordIndex(wallCoords, [x, y]) >= 0
     return onmap && notWall
   }
 
   const resolveMove = (player: number[]) => {
-    const { potions } = mapState
-    let { weapon } = playerState
-    let { weaponset } = combatState
-    const {  weaponCoords } = combatState
-    const { baddieCoords } = baddieState
-    
+    let {
+      player: { weapon },
+      combat: { weaponset },
+    } = gameState
+    const {
+      map: { potions },
+      combat: { weaponCoords },
+      baddies: { baddieCoords, bossCoords },
+    } = gameState
+
     // Check for and apply Potions
     const hitPotions = potions.filter(function (coords) {
       return !(coords[0] === player[0] && coords[1] === player[1])
@@ -178,12 +195,14 @@ export function useMap() {
     if (hitPotions.length) {
       // Heal and remove potion from map
       heal(100)
-      setMapState({
-        ...mapState,
-        potions,
+      setGameState({
+        ...gameState,
+        map: {
+          ...gameState.map,
+          potions,
+        },
       })
     }
-
 
     // Check for hitting baddies for combat
     let baddieIndex
@@ -210,19 +229,24 @@ export function useMap() {
       return !(coords[0] === player[0] && coords[1] === player[1])
     })
     if (foundWeapons.length) {
-      setCombatState({
-        ...combatState,
-        weaponCoords
-      })
-      setPlayerState({
-        ...playerState,
-        weapon: weapon,
+      setGameState({
+        ...gameState,
+        combat: {
+          ...gameState.combat,
+          weaponCoords,
+        },
+        player: {
+          ...gameState.player,
+          weapon,
+        },
       })
     }
 
     // Check for combat with the Boss
-    const hitBoss = player[0] === baddieState.bossCoords[0][0] &&
-      player[1] === baddieState.bossCoords[0][1]
+    const hitBoss =
+      bossCoords[0] &&
+      player[0] === bossCoords[0][0] &&
+      player[1] === bossCoords[0][1]
     if (hitBoss) {
       if (!fightBoss()) {
         return false
@@ -232,17 +256,17 @@ export function useMap() {
   }
 
   const fogCheck = (x: number, y: number) => {
+    const { player: { player } } = gameState
+    // Short circuiting for now
+    return false
     return (
-      Math.abs(player[0] - x) + Math.abs(player[1] - y) >
-        5 ||
+      Math.abs(player[0] - x) + Math.abs(player[1] - y) > 5 ||
       Math.abs(player[0] - x) > 4 ||
       Math.abs(player[1] - y) > 4
-    );
+    )
   }
 
   return {
-    mapState,
-    setMapState,
     resolveMove,
     validMove,
     fogCheck,

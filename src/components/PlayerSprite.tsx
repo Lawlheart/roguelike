@@ -3,10 +3,13 @@ import { useContext } from "react"
 import { FloatingText } from "./FloatingText"
 import { asPixels } from "../helpers"
 import { GameContext } from '../context'
+import { useGame } from "../hooks"
 
 
 export const PlayerSprite = () => {
-  const gameState = useContext(GameContext)
+  const { gameState } = useContext(GameContext)
+
+  const { moveSprite } = useGame()
 
   const {
     player: {

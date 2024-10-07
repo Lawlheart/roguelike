@@ -1,8 +1,12 @@
+import { useContext } from "react"
+import { GameContext } from "../context"
 import { asPixels } from "../helpers"
 import { useGame } from "../hooks"
 
 export default function PlayAgain() {
-  const { gameState, resetGame } = useGame()
+  const { gameState } = useContext(GameContext)
+
+  const { resetGame } = useGame()
   const { viewwidth, viewheight } = gameState.map
 
   return (

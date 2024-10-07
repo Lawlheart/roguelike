@@ -1,15 +1,13 @@
-import { useState } from "react"
+import { useContext } from "react"
 
-import { DEFAULT_INITIAL_STATE } from "../config"
-import { usePlayer, useBaddies, useCombat, useMap, useRooms } from "."
+import { useBaddies, useMap, useRooms } from "."
+import { GameContext } from "../context"
 
 export function useGame() {
-  const [gameState, setGameState] = useState(DEFAULT_INITIAL_STATE)
+  const { gameState, setGameState } = useContext(GameContext)
 
-  const { baddieState, getBaddieSet } = useBaddies()
-  const { playerState, setPlayerState } = usePlayer()
-  const { combatState } = useCombat()
-  const { mapState, setMapState, validMove, resolveMove, getAllCoords, carveHalls, genMap, randomPlayerStart, randomLocations } = useMap()
+  const { makeBaddieSet } = useBaddies()
+  const { validMove, resolveMove, getAllCoords, carveHalls, genMap, randomPlayerStart, randomLocations } = useMap()
   const { placeRooms } = useRooms()
 
   const initialize = () => {
@@ -18,56 +16,64 @@ export function useGame() {
     coords = carveHalls(rooms, coords)
 
     const map = genMap(coords)
-    let playerCoords = randomPlayerStart(coords)
+    const playerCoords = randomPlayerStart(coords)
 
     let invalids = [playerCoords]
     
-    let potions = randomLocations(5, coords, invalids)
+    const potions = randomLocations(5, coords, invalids)
     invalids = [...invalids, ...potions]
 
-    let baddies = randomLocations(30, coords, invalids)
+    const baddies = randomLocations(30, coords, invalids)
     invalids = [...invalids, ...baddies]
 
-    let weapons = randomLocations(4, coords, invalids)
-    invalids = [...invalids, ...weapons]
+    const weaponCoords = randomLocations(4, coords, invalids)
+    invalids = [...invalids, ...weaponCoords]
 
-    let bossCoords = randomLocations(1, coords, invalids)
-    let baddieset = getBaddieSet(baddies.length)
+    const bossCoords = randomLocations(1, coords, invalids)
+    const baddieset = makeBaddieSet(baddies.length)
 
     setGameState({
       ...gameState,
       baddies: {
-        ...baddieState,
+        ...gameState.baddies,
         baddieset,
         bossCoords,
       },
-      player: playerState,
-      combat: combatState,
+      player: {
+        ...gameState.player,
+        player: playerCoords
+      },
+      combat: {
+        ...gameState.combat,
+        weaponCoords,
+      },
       map: {
-        ...mapState,
+        ...gameState.map,
         map,
         rooms,
       },
     })
+    console.log('Initialize', gameState)
   }
 
   const resetGame = () => {
-    // this.replaceState(this.getInitialState(), function () {
-    //   this.initialize();
-    // });
+    initialize()
   }
 
-  const moveSprite = (e: React.KeyboardEvent<HTMLInputElement>) =>{
-    if (playerState.health === 0 || gameState.game.win) {
+  const moveSprite = (keyCode: string) =>{
+    console.log('MoveSprite function')
+    if (gameState.player.health === 0 || gameState.game.win) {
       return;
     }
-    e.preventDefault()
-    const { player } = playerState
-    let { direction, sprite, xpos, ypos } = playerState
-    const { gridheight, gridwidth, viewheight, viewwidth } = mapState
-    let { bgx, bgy } = mapState
+    const { player } = gameState.player
+    let { direction, sprite, xpos, ypos } = gameState.player
+    const { gridheight, gridwidth, viewheight, viewwidth } = gameState.map
+    let { bgx, bgy } = gameState.map
 
-    if (e.keyCode === 40 || e.keyCode === 83) {
+    console.log(keyCode)
+
+    if (keyCode === 'KeyS' || keyCode === 'ArrowDown') {
+      console.log("DOWN")
       direction = "down";
       if (validMove(player[0], player[1] + 1)) {
         if (
@@ -79,7 +85,8 @@ export function useGame() {
           ypos += 1;
         }
       }
-    } else if (e.keyCode === 38 || e.keyCode === 87) {
+    } else if (keyCode === 'KeyW' || keyCode === 'ArrowUp') {
+      console.log("UP")
       direction = "up";
       if (validMove(player[0], player[1] - 1)) {
         if (bgy > 0 && ypos < Math.floor(viewheight / 2)) {
@@ -88,7 +95,8 @@ export function useGame() {
           ypos -= 1;
         }
       }
-    } else if (e.keyCode === 37 || e.keyCode === 65) {
+    } else if (keyCode === 'KeyA' || keyCode === 'ArrowLeft') {
+      console.log("LEFT")
       direction = "left";
       if (validMove(player[0] - 1, player[1])) {
         if (bgx > 0 && xpos < Math.floor(viewwidth / 2)) {
@@ -97,7 +105,8 @@ export function useGame() {
           xpos -= 1;
         }
       }
-    } else if (e.keyCode === 39 || e.keyCode === 68) {
+    } else if (keyCode === 'KeyD' || keyCode === 'ArrowRight') {
+      console.log("RIGHT")
       direction = "right";
       if (validMove(player[0] + 1, player[1])) {
         if (
@@ -109,26 +118,29 @@ export function useGame() {
           xpos += 1;
         }
       }
-    } else if (e.keyCode === 66) {
+    } else if (keyCode === 'KeyB') {
       sprite = "blackmage";
-    } else if (e.keyCode === 82) {
+    } else if (keyCode === 'KeyR') {
       sprite = "redmage";
     }
     if (resolveMove([xpos + bgx, ypos + bgy])) {
-      setPlayerState({
-        ...playerState,
-        direction: direction,
-        sprite: sprite,
-        xpos: xpos,
-        ypos: ypos,
-        player: [xpos + bgx, ypos + bgy],
+      console.log('Resolving Move')
+      setGameState({
+        ...gameState,
+        player: {
+          ...gameState.player,
+          direction: direction,
+          sprite: sprite,
+          xpos: xpos,
+          ypos: ypos,
+          player: [xpos + bgx, ypos + bgy],
+        },
+        map: {
+          ...gameState.map,
+          bgx: bgx,
+          bgy: bgy,
+        }
       })
-
-      setMapState({
-        ...mapState,
-        bgx: bgx,
-        bgy: bgy,
-      });
     }
   }
 

@@ -1,12 +1,11 @@
-import { useState } from "react"
+import { useContext } from "react"
 
-import { useMap } from "."
 import { makeRoom, random } from "../helpers"
 import { IRoom } from "../types"
+import { GameContext } from "../context"
 
 export function useRooms() {
-  const [roomState, setRoomState] = useState()
-  const { mapState } = useMap()
+  const { gameState } = useContext(GameContext)
 
   const intersects = (roomA: IRoom, roomB: IRoom) => {
     return (
@@ -24,7 +23,7 @@ export function useRooms() {
       gridwidth,
       gridheight,
       runs,
-    } = mapState
+    } = gameState.map
     const rooms = []
     for (let i = 0; i < runs; i++) {
       const w = random(minRoomSize, maxRoomSize)
@@ -49,8 +48,6 @@ export function useRooms() {
   }
 
   return {
-    roomState,
-    setRoomState,
     placeRooms,
     intersects,
   }

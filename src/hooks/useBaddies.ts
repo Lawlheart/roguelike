@@ -1,22 +1,21 @@
-import { useState } from 'react'
+import { useContext } from 'react'
 
 import { random } from '../helpers'
-import { BADDIES_INITIAL_STATE } from '../config/baddies'
-import { useCombat, usePlayer, useMap } from '.'
+import { useCombat, useMap } from '.'
+import { GameContext } from '../context'
 
 export function useBaddies() {
-  const [baddieState, setBaddieState] = useState(BADDIES_INITIAL_STATE)
-  
-  const { playerState } = usePlayer()
+  const { gameState, setGameState } = useContext(GameContext)
+
   const { fight } = useCombat()
   const { validMove } = useMap()
 
   const dance = () => {
-    const { baddieCoords } = baddieState
-    const {  player } = playerState
+    const { baddieCoords, baddieFoot } = gameState.baddies
+    const { player } = gameState.player
  
-    let nextCoord, nextfoot;
-    if (baddieState.baddieFoot === "left") {
+    let nextCoord, nextfoot
+    if (baddieFoot === "left") {
       nextfoot = "right";
     } else {
       nextfoot = "left";
@@ -46,14 +45,17 @@ export function useBaddies() {
         baddieCoords[i] = nextCoord;
       }
     }
-    setBaddieState({
-      ...baddieState,
-      baddieFoot: nextfoot,
-      baddieCoords: baddieCoords,
+    setGameState({
+      ...gameState,
+      baddies: {
+        ...gameState.baddies,
+        baddieFoot: nextfoot,
+        baddieCoords: baddieCoords,
+      }
     });
   }
 
-  const getBaddieSet = (count: number) => {
+  const makeBaddieSet = (count: number) => {
     const baddieset = []
     const colors = ["blue", "red", "gold"]
 
@@ -69,19 +71,6 @@ export function useBaddies() {
     }
     return baddieset;
   }
-
-  const vanquish = (baddieIndex: number) => {
-    const { baddieCoords, baddieset } = baddieState
-
-    baddieset.splice(baddieIndex, 1)
-    baddieCoords.splice(baddieIndex, 1)
-    
-    setBaddieState({
-      ...baddieState,
-      baddieCoords,
-      baddieset,
-    })
-  }
   
-  return { baddieState, setBaddieState, dance, vanquish, getBaddieSet }
+  return { dance, makeBaddieSet }
 }

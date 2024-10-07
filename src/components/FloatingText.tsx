@@ -1,14 +1,15 @@
-import { useCombat } from "../hooks"
+import { useContext } from "react"
+
+import { GameContext } from "../context"
 
 export const FloatingText = () => {
+  const { gameState } = useContext(GameContext)
   const { 
-    combatState: { 
-      hitmessage, 
-      hurtmessage, 
-      healmessage, 
-      xpmessage
-    }
-  } = useCombat()
+    hitmessage, 
+    hurtmessage, 
+    healmessage, 
+    xpmessage
+  } = gameState.combat
 
   return (
     <div className="floating-text">

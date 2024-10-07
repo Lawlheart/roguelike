@@ -1,3 +1,4 @@
+import React, { ReactNode } from "react"
 import { IRoom } from "./rooms"
 
 // Baddies Config Types
@@ -86,4 +87,22 @@ export interface IGameState {
     playing: boolean,
     win: boolean,
   }
+}
+
+export interface IGameContext {
+  gameState: IGameState
+  setGameState: (React.Dispatch<React.SetStateAction<IGameState>>) | ((newGameState: IGameState) => void)
+  // combatState: ICombatState
+  // baddieState: IBaddiesState
+  // playerState: IPlayerState
+  // mapState: IMapState
+  // setGameState: (newGameState: IGameState) => void
+  // setCombatState: (newCombatState: ICombatState) => void
+  // setBaddieState: (newBaddieState: IBaddiesState) => void
+  // setPlayerState: (newPlayerState: IPlayerState) => void
+  // setMapState: (newMapState: IMapState) => void
+}
+
+export interface GameProviderProps {
+  children: ReactNode
 }

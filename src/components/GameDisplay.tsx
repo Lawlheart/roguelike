@@ -1,4 +1,6 @@
-import { useGame } from "../hooks"
+import { useContext } from "react"
+
+import { GameContext } from "../context"
 import GameInterface from "./GameInterface"
 import GameOver from "./GameOver"
 import GameSidebar from "./GameSidebar"
@@ -6,36 +8,30 @@ import GameView from "./GameView"
 import PlayAgain from "./PlayAgain"
 
 function GameDisplay() {
-  const { gameState: {
+  const { gameState } = useContext(GameContext)
+
+  const {
     player: {
       health,
     },
     game: {
       win,
     }
-  } } = useGame()
+  } = gameState
 
-  let displayElement
 
-  const gameIsOver = win || health
-  if (health === 0) {
-    displayElement = (<GameOver />)
-  } else if (win) {
-    displayElement = (<PlayAgain />)
-  } else {
-    displayElement = (
-      <GameView />
-    );
-  }
+  const gameIsPlaying = !win && !!health
+
   return (
     <>
       <GameSidebar />
       <GameInterface />
-      { gameIsOver ? 
-        (win ? (<PlayAgain />) : (<GameOver />)) :
-        (<GameView />)
+      { gameIsPlaying ? 
+        (<GameView />) :
+        (win ?
+          (<PlayAgain />) :
+          (<GameOver />))
       }
-      { displayElement }
     </>
   )
 }

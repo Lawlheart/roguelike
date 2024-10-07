@@ -1,7 +1,9 @@
-import { useMap } from "../hooks"
+import { useContext } from "react"
+
+import { GameContext } from "../context"
 
 function GameSidebar() {
-  const { mapState } = useMap()
+  const { gameState } = useContext(GameContext)
 
   return (
     <div className="sidebar">
@@ -29,7 +31,7 @@ function GameSidebar() {
       </div>
       <div className="potions-box clearfix">
         <h2>Potions</h2>
-        <h4>{mapState.potions.length} on map</h4>
+        <h4>{gameState.map.potions.length} on map</h4>
         <div className="gear potion info" />
       </div>
       <div className="objective-box clearfix">

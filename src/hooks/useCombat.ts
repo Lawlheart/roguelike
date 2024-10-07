@@ -1,64 +1,17 @@
-import { useState } from "react"
+import { useContext } from "react"
 
-import { COMBAT_INITIAL_STATE } from "../config"
-import { useBaddies, usePlayer, useGame } from "../hooks"
+import { useMessage, usePlayer } from "../hooks"
 import { random } from "../helpers"
+import { GameContext } from "../context"
 
 export function useCombat() {
-  const [combatState, setCombatState] = useState(COMBAT_INITIAL_STATE)
+  const { gameState, setGameState } = useContext(GameContext) 
 
-  const { baddieState, setBaddieState, vanquish } = useBaddies()
-  const { playerState, setPlayerState, playerDamage, checkForLevelUp } = usePlayer()
-  const { gameState, setGameState } = useGame()
-
-  const flashMessage = (message: string, messageType: string) => {
-    let {
-      hitmessage,
-      hurtmessage,
-      healmessage,
-      xpmessage,
-      messageCount: count,
-    } = combatState
-
-    if (messageType === "hit") {
-      hitmessage = message
-    } else if (messageType === "hurt") {
-      hurtmessage = message
-    } else if (messageType === "heal") {
-      healmessage = message
-    } else if (messageType === "xp") {
-      xpmessage = message
-    }
-    setCombatState(
-      {
-        ...combatState,
-        hitmessage: hitmessage,
-        hurtmessage: hurtmessage,
-        healmessage: healmessage,
-        xpmessage: xpmessage,
-        messageCount: (count += 1),
-      }
-    )
-    
-    setTimeout(function () {
-      if (combatState.messageCount === count) {
-        setCombatState(
-          {
-            ...combatState,
-            hitmessage: "",
-            hurtmessage: "",
-            healmessage: "",
-            xpmessage: "",
-            messageCount: (count += 1),
-          }
-        )
-      }
-    }, 600)
-  }
+  const { playerDamage, checkForLevelUp } = usePlayer()
+  const { flashMessage } = useMessage()
 
   const takeDamage = (damage: number) => {
-    let { health } = playerState
-    let { game: { playing } } = gameState
+    let { game: { playing }, player: { health } } = gameState
 
     if (health - damage <= 0) {
       health = 0
@@ -67,16 +20,15 @@ export function useCombat() {
       health -= damage
     }
 
-    setPlayerState({
-      ...playerState,
-      health,
-    })
-
     setGameState({
       ...gameState,
       game: {
         playing,
         win: false,
+      },
+      player: {
+        ...gameState.player,
+        health,
       }
     })
 
@@ -89,22 +41,41 @@ export function useCombat() {
   }
 
   const heal = (healing: number) => {
-    const { maxhealth } = playerState
-    let { health } = playerState
+    const { maxhealth } = gameState.player
+    let { health } = gameState.player
     if (health + healing >= maxhealth) {
       health = maxhealth
     } else {
       health += healing
     }
     flashMessage("+ " + healing + " hp", "heal")
-    setPlayerState({
-      ...playerState,
-      health: health,
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        health,
+      }
+    })
+  }
+
+  const vanquish = (baddieIndex: number) => {
+    const { baddieCoords, baddieset } = gameState.baddies
+
+    baddieset.splice(baddieIndex, 1)
+    baddieCoords.splice(baddieIndex, 1)
+    
+    setGameState({
+      ...gameState,
+      baddies: {
+        ...gameState.baddies,
+        baddieCoords,
+        baddieset,
+      }
     })
   }
 
   const fight = (baddieIndex: number) => {
-    const { baddieset } = baddieState
+    const { baddieset } = gameState.baddies
     const baddie = baddieset[baddieIndex]
 
     const playerLives = takeDamage(random(baddie.mindmg, baddie.maxdmg))
@@ -113,18 +84,24 @@ export function useCombat() {
       if (damage >= baddie.hp) {
         vanquish(baddieIndex)
         flashMessage("+ " + 10 * baddie.level + " xp", "xp")
-        checkForLevelUp(playerState.xp + 10 * baddie.level)
+        checkForLevelUp(gameState.player.xp + 10 * baddie.level)
 
-        setPlayerState({
-          ...playerState,
-          xp: playerState.xp + 10 * baddie.level,
+        setGameState({
+          ...gameState,
+          player: {
+            ...gameState.player,
+            xp: gameState.player.xp + 10 * baddie.level,
+          }
         })
         return true
       } else {
         baddie.hp -= damage
-        setBaddieState({
-          ...baddieState,
-          baddieset: baddieset,
+        setGameState({
+          ...gameState,
+          baddies: {
+            ...gameState.baddies,
+            baddieset: baddieset,
+          }
         })
         return false
       }
@@ -132,7 +109,7 @@ export function useCombat() {
   }
 
   const fightBoss = () => {
-    const { bossData } = baddieState
+    const { bossData } = gameState.baddies
 
     const randomDamage = random(bossData.mindmg, bossData.maxdmg)
     const lives = takeDamage(randomDamage)
@@ -150,19 +127,19 @@ export function useCombat() {
         });
       } else {
         bossData.hp -= damage;
-        setBaddieState({
-          ...baddieState,
-          bossData,
-        });
+        setGameState({
+          ...gameState,
+          baddies: {
+            ...gameState.baddies,
+            bossData,
+          }
+        })
       }
     }
     return false;
   }
 
   return {
-    combatState,
-    setCombatState,
-    flashMessage,
     takeDamage,
     heal,
     fight,

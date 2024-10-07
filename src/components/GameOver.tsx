@@ -1,17 +1,21 @@
 import { useMap, useGame } from '../hooks'
 
 import { asPixels } from '../helpers'
+import { useContext } from 'react'
+import { GameContext } from '../context'
 
 function GameOver() {
-  const { mapState } = useMap()
+  const { gameState } = useContext(GameContext)
+
+  const { viewwidth, viewheight } = gameState.map
   const { resetGame } = useGame()
 
   return (
     <div
       className="box game-over"
       style={{
-        width: asPixels(mapState.viewwidth),
-        height: asPixels(mapState.viewheight),
+        width: asPixels(viewwidth),
+        height: asPixels(viewheight),
       }}
     >
       <h1 style={{ color: "white" }}>GAME OVER</h1>
